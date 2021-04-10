@@ -202,3 +202,7 @@ dmypy.json
 # profiling data
 .prof
 
+*.idea
+*.vscode
+*gen
+
