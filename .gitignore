@@ -79,7 +79,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
@@ -201,4 +200,8 @@ dmypy.json
 
 # profiling data
 .prof
+
+*.idea
+*.vscode
+*gen
 
