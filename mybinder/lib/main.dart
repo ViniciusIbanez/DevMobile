@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mybinder/screens/login.dart';
 import 'package:mybinder/screens/mybinder.dart';
-void main() => runApp(MyApp());
+import 'package:firebase_core/firebase_core.dart';
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
 
