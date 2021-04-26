@@ -30,23 +30,22 @@ class LoginPageState extends State<LoginPage>
   }
 
   Future<UserCredential> signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
 
-                            log("ENtrou");
-                            // Trigger the authentication flow
-                            final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
 
-                            // Obtain the auth details from the request
-                            final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    // Create a new credential
+    final GoogleAuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
 
-                            // Create a new credential
-                            final GoogleAuthCredential credential = GoogleAuthProvider.credential(
-                            accessToken: googleAuth.accessToken,
-                            idToken: googleAuth.idToken,
-                            );
-
-                            // Once signed in, return the UserCredential
-                            return await FirebaseAuth.instance.signInWithCredential(credential);
-                            }
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,12 +81,11 @@ class LoginPageState extends State<LoginPage>
                               fillColor: Colors.blue),
                           keyboardType: TextInputType.emailAddress,
                           onChanged: (value) {
-                              setState(() {
-                            _email = value.trim(); 
+                            setState(() {
+                              _email = value.trim();
                             });
-                        },
+                          },
                         ),
-                        
                         SizedBox(height: 10),
                         new TextFormField(
                           decoration: new InputDecoration(
@@ -96,10 +94,10 @@ class LoginPageState extends State<LoginPage>
                           obscureText: true,
                           keyboardType: TextInputType.text,
                           onChanged: (value) {
-                              setState(() {
-                                _password = value.trim(); 
-                              });
-                            },
+                            setState(() {
+                              _password = value.trim();
+                            });
+                          },
                         ),
                         SizedBox(height: 100),
                         new MaterialButton(
@@ -115,26 +113,24 @@ class LoginPageState extends State<LoginPage>
                             //       builder: (context) => MyBinder()),
                             // );
                             Future<UserCredential> auth = signInWithGoogle();
-                            
                           },
                         ),
                         SizedBox(height: 15),
                         new MaterialButton(
-                          height: 50.0,
-                          minWidth: 300,
-                          color: Colors.blueAccent,
-                          textColor: Colors.white,
-                          child: Text('Criar conta',
-                              style: TextStyle(fontSize: 25)),
-                          onPressed: () {
-                            try {
-                              auth.createUserWithEmailAndPassword(
-                                  email: _email, password: _password);
-                            } catch (e) {
-                              print("Error on signup " + e);
-                            }
-                          }
-                        ),
+                            height: 50.0,
+                            minWidth: 300,
+                            color: Colors.blueAccent,
+                            textColor: Colors.white,
+                            child: Text('Criar conta',
+                                style: TextStyle(fontSize: 25)),
+                            onPressed: () {
+                              try {
+                                auth.createUserWithEmailAndPassword(
+                                    email: _email, password: _password);
+                              } catch (e) {
+                                print("Error on signup " + e);
+                              }
+                            }),
                         new Padding(
                           padding: const EdgeInsets.only(top: 60.0),
                         ),
