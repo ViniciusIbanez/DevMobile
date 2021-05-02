@@ -1,4 +1,4 @@
-package com.example.mybinder
+package com.ibanez.facens
 
 import io.flutter.embedding.android.FlutterActivity
 
