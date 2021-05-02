@@ -1,8 +1,12 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:mybinder/screens/mybinder.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:developer';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -14,6 +18,8 @@ class LoginPageState extends State<LoginPage>
   Animation<double> _iconAnimation;
   AnimationController _iconAnimationController;
   String _email, _password;
+  bool signInEmail = false;
+  String emailButtonText = "Entrar com email";
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
@@ -27,6 +33,40 @@ class LoginPageState extends State<LoginPage>
     );
     _iconAnimation.addListener(() => this.setState(() {}));
     _iconAnimationController.forward();
+  }
+
+  void changeEmailState() {
+    setState(() {
+      signInEmail = !signInEmail;
+      emailButtonText = 'Entrar';
+    });
+  }
+
+  void loginEmail() async {
+    try {
+      var authUser = await auth.signInWithEmailAndPassword(
+          email: _email, password: _password);
+      goToHome(authUser);
+    } on FirebaseAuthException catch (e) {
+      showErrorToast("Email ou Senha incorretos");
+    }
+  }
+
+  void goToHome(auth) {
+    if (auth != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => MyBinder()),
+      );
+    }
+  }
+
+  showErrorToast(String errorMessage) {
+    final snackBar = SnackBar(
+      content: Text('$errorMessage'),
+      backgroundColor: Colors.red,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   Future<UserCredential> signInWithGoogle() async {
@@ -74,61 +114,75 @@ class LoginPageState extends State<LoginPage>
                     child: new Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        new TextFormField(
-                          decoration: new InputDecoration(
-                              labelText: "E-mail cadastrado",
-                              suffixIcon: Icon(Icons.email, color: Colors.blue),
-                              fillColor: Colors.blue),
-                          keyboardType: TextInputType.emailAddress,
-                          onChanged: (value) {
-                            setState(() {
-                              _email = value.trim();
-                            });
-                          },
-                        ),
+                        if (signInEmail)
+                          new TextFormField(
+                            decoration: new InputDecoration(
+                                labelText: "E-mail cadastrado",
+                                suffixIcon:
+                                    Icon(Icons.email, color: Colors.blue),
+                                fillColor: Colors.blue),
+                            keyboardType: TextInputType.emailAddress,
+                            onChanged: (value) {
+                              setState(() {
+                                _email = value.trim();
+                              });
+                            },
+                          ),
                         SizedBox(height: 10),
-                        new TextFormField(
-                          decoration: new InputDecoration(
-                              labelText: "Senha",
-                              suffixIcon: Icon(Icons.lock, color: Colors.blue)),
-                          obscureText: true,
-                          keyboardType: TextInputType.text,
-                          onChanged: (value) {
-                            setState(() {
-                              _password = value.trim();
-                            });
-                          },
-                        ),
-                        SizedBox(height: 100),
-                        new MaterialButton(
-                          height: 50.0,
-                          minWidth: 300,
-                          color: Colors.blueAccent,
-                          textColor: Colors.white,
-                          child: Text('Entrar', style: TextStyle(fontSize: 25)),
+                        if (signInEmail)
+                          new TextFormField(
+                            decoration: new InputDecoration(
+                                labelText: "Senha",
+                                suffixIcon:
+                                    Icon(Icons.lock, color: Colors.blue)),
+                            obscureText: true,
+                            keyboardType: TextInputType.text,
+                            onChanged: (value) {
+                              setState(() {
+                                _password = value.trim();
+                              });
+                            },
+                          ),
+                        SizedBox(height: 50),
+                        SignInButtonBuilder(
+                          text: '$emailButtonText',
+                          icon: Icons.email,
                           onPressed: () {
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //       builder: (context) => MyBinder()),
-                            // );
+                            if (signInEmail == false) {
+                              changeEmailState();
+                            } else {
+                              loginEmail();
+                            }
+                          },
+                          backgroundColor: Colors.blueGrey[700],
+                        ),
+                        SignInButton(
+                          Buttons.GoogleDark,
+                          text: "Entrar com conta Google",
+                          onPressed: () {
                             Future<UserCredential> auth = signInWithGoogle();
+                            goToHome(auth);
                           },
                         ),
-                        SizedBox(height: 15),
+                        //SizedBox(height: 15),
                         new MaterialButton(
-                            height: 50.0,
-                            minWidth: 300,
+                            height: 35,
+                            minWidth: 220,
                             color: Colors.blueAccent,
                             textColor: Colors.white,
                             child: Text('Criar conta',
-                                style: TextStyle(fontSize: 25)),
-                            onPressed: () {
-                              try {
-                                auth.createUserWithEmailAndPassword(
-                                    email: _email, password: _password);
-                              } catch (e) {
-                                print("Error on signup " + e);
+                                style: TextStyle(fontSize: 20)),
+                            onPressed: () async {
+                              if (signInEmail == false) {
+                                changeEmailState();
+                              } else {
+                                try {
+                                  await auth.createUserWithEmailAndPassword(
+                                      email: _email, password: _password);
+                                  goToHome(auth);
+                                } catch (e) {
+                                  showErrorToast("Email ou Senha inválidos");
+                                }
                               }
                             }),
                         new Padding(
