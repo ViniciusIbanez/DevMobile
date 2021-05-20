@@ -1,0 +1,15 @@
+platform :android do
+  lane :distribute do
+      appId = "1:297419581537:android:918977fb7e31f230ba6220"
+  
+      Dir.chdir '../..' do
+            sh('flutter', 'packages', 'get')
+            sh('flutter', 'clean')
+            sh('flutter', 'build', 'apk')
+          end
+      firebase_app_distribution(
+          app: appId,
+          apk_path: "../build/app/outputs/apk/release/app-release.apk"
+      )
+  end
+end

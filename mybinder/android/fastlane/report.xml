@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="fastlane.lanes">
+    
+    
+    
+      
+      <testcase classname="fastlane.lanes" name="0: flutter packages get" time="2.645121937">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="1: flutter clean" time="1.425331204">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="2: flutter build apk" time="55.879929043">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="3: firebase_app_distribution" time="9.734220119">
+        
+      </testcase>
+    
+  </testsuite>
+</testsuites>
