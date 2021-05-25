@@ -7,6 +7,7 @@ import 'dart:developer';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mybinder/notification_handler.dart';
+import 'package:mybinder/api_handler.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -54,8 +55,10 @@ class LoginPageState extends State<LoginPage>
 
   void goToHome(auth) {
     if (auth != null) {
-      final NotificationHandler topic = new NotificationHandler();
-      topic.init();
+      //final NotificationHandler topic = new NotificationHandler();
+      final ApiHandler api = new ApiHandler();
+      api.insertUser();
+      //topic.init();
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => MyBinder()),
@@ -78,12 +81,14 @@ class LoginPageState extends State<LoginPage>
     // Obtain the auth details from the request
     final GoogleSignInAuthentication googleAuth =
         await googleUser.authentication;
+    print(googleAuth.toString());
 
     // Create a new credential
     final GoogleAuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
+    print("Creds: " + credential.toString());
 
     // Once signed in, return the UserCredential
     return await FirebaseAuth.instance.signInWithCredential(credential);
