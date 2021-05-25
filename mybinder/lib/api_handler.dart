@@ -16,21 +16,24 @@ class ApiHandler {
   bool _initialized = false;
   String _token = "";
 
-  Future<void> init() async {}
+  Future<void> init(String user) async {
+    String _user = user;
+  }
 
-  Future<void> insertUser() async {
+  Future<void> insertUser(String user) async {
     // This example uses the Google Books API to search for books about http.
     // https://developers.google.com/books/docs/overview
     //var url = Uri.https('my-binder-api-staging.herokuapp.com', '/user/insert');
 
     // Await the http get response, then decode the json-formatted response.
+    print("### Inserting new user");
     final response = http.post(
       Uri.parse('https://my-binder-api-staging.herokuapp.com/user/insert'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(<String, String>{
-        'user': 'ibanez',
+        'user': user,
       }),
     );
   }
