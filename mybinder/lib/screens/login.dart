@@ -1,6 +1,5 @@
-
 import 'package:flutter/material.dart';
-import 'package:mybinder/screens/mybinder.dart';
+import 'package:mybinder/screens/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:developer';
@@ -52,13 +51,13 @@ class LoginPageState extends State<LoginPage>
     }
   }
 
-  void goToHome(auth) {
-    if (auth != null) {
+  void goToHome(user) {
+    if (user != null) {
       final NotificationHandler topic = new NotificationHandler();
       topic.init();
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => MyBinder()),
+        MaterialPageRoute(builder: (context) => Home()),
       );
     }
   }
@@ -78,12 +77,14 @@ class LoginPageState extends State<LoginPage>
     // Obtain the auth details from the request
     final GoogleSignInAuthentication googleAuth =
         await googleUser.authentication;
+    print(googleAuth.toString());
 
     // Create a new credential
     final GoogleAuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
+    print("Creds: " + credential.toString());
 
     // Once signed in, return the UserCredential
     return await FirebaseAuth.instance.signInWithCredential(credential);
