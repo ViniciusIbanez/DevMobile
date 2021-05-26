@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mybinder/api_handler.dart';
+import 'package:mybinder/binder.dart';
 
 class MyBinder extends StatefulWidget {
   String user;
@@ -11,30 +12,47 @@ class MyBinder extends StatefulWidget {
 }
 
 class _MyBinderState extends State<MyBinder> {
+  final ApiHandler api = new ApiHandler();
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  List<Binder> entries = [];
+
   @override
-  void initState() {
+  Future<void> initState() {
     super.initState();
-    final FirebaseAuth auth = FirebaseAuth.instance;
-    final ApiHandler api = new ApiHandler();
-    final List<String> entries = <String>['A', 'B', 'C'];
-    final List<int> colorCodes = <int>[600, 500, 100];
+    initList();
+  }
+
+  Future<void> initList() async {
+    entries = await api.createBinder(auth.currentUser.uid);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: new ListView(children: <Widget>[
-      ListTile(
-        title: Text("Battery Full"),
-        leading: Image.asset(
-          "assets/logo.png",
-          width: 50.0,
-          height: 50.0,
-        ),
+        body: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Expanded(
+          child: SizedBox(
+            height: 200.0,
+            child: new ListView.builder(
+              padding: const EdgeInsets.all(0.01),
+              itemCount: entries.length,
+              itemBuilder: _buildItemsForListView,
+            ),
+          ),
+        )
+      ],
+    ));
+  }
+
+  ListTile _buildItemsForListView(BuildContext context, int index) {
+    return ListTile(
+      title: Image.network(entries[index].imageUrl),
+      subtitle: Text(
+        "Set: " + entries[index].setName + "#" + entries[index].multiverseId,
+        textAlign: TextAlign.center,
       ),
-      ListTile(title: Text("Anchor"), leading: Icon(Icons.anchor)),
-      ListTile(title: Text("Alarm"), leading: Icon(Icons.access_alarm)),
-      ListTile(title: Text("Ballot"), leading: Icon(Icons.ballot))
-    ]));
+    );
   }
 }
