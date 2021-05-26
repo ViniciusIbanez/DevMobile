@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mybinder/api_handler.dart';
 
 class MyBinder extends StatefulWidget {
-  final String user;
-  const MyBinder({Key key, this.user}) : super(key: key);
+  String user;
+  MyBinder({Key key, this.user}) : super(key: key);
 
   @override
   _MyBinderState createState() => _MyBinderState();
@@ -16,32 +16,25 @@ class _MyBinderState extends State<MyBinder> {
     super.initState();
     final FirebaseAuth auth = FirebaseAuth.instance;
     final ApiHandler api = new ApiHandler();
-    if (auth.currentUser != null) {
-      print("###### " + auth.currentUser.uid);
-      api.insertUser(auth.currentUser.uid);
-    }
+    final List<String> entries = <String>['A', 'B', 'C'];
+    final List<int> colorCodes = <int>[600, 500, 100];
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData.dark(),
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('MyBinder'),
-        ),
-        body: Column(
-          children: [
-            new MaterialButton(
-                height: 35,
-                minWidth: 220,
-                color: Colors.blueAccent,
-                textColor: Colors.white,
-                child: Text('Teste', style: TextStyle(fontSize: 20)),
-                onPressed: () async {}),
-          ],
+    return Scaffold(
+        body: new ListView(children: <Widget>[
+      ListTile(
+        title: Text("Battery Full"),
+        leading: Image.asset(
+          "assets/logo.png",
+          width: 50.0,
+          height: 50.0,
         ),
       ),
-    );
+      ListTile(title: Text("Anchor"), leading: Icon(Icons.anchor)),
+      ListTile(title: Text("Alarm"), leading: Icon(Icons.access_alarm)),
+      ListTile(title: Text("Ballot"), leading: Icon(Icons.ballot))
+    ]));
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mybinder/screens/mybinder.dart';
+import 'package:mybinder/screens/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:developer';
@@ -57,7 +57,7 @@ class LoginPageState extends State<LoginPage>
       topic.init();
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => MyBinder()),
+        MaterialPageRoute(builder: (context) => Home()),
       );
     }
   }
