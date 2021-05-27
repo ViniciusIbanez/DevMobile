@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'dart:ffi';
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'dart:convert' as convert;
-
 import 'package:http/http.dart' as http;
+import 'package:mybinder/binder.dart';
 
 class ApiHandler {
   ApiHandler._();
@@ -20,14 +19,8 @@ class ApiHandler {
     String _user = user;
   }
 
-  Future<void> insertUser(String user) async {
-    // This example uses the Google Books API to search for books about http.
-    // https://developers.google.com/books/docs/overview
-    //var url = Uri.https('my-binder-api-staging.herokuapp.com', '/user/insert');
-
-    // Await the http get response, then decode the json-formatted response.
-    print("### Inserting new user");
-    final response = http.post(
+  Future<bool> insertUser(String user) async {
+    final response = await http.post(
       Uri.parse('https://my-binder-api-staging.herokuapp.com/user/insert'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -36,5 +29,52 @@ class ApiHandler {
         'user': user,
       }),
     );
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw Exception('Failed to validate user');
+    }
+  }
+
+  Future<List<Binder>> createBinder(String user) async {
+    print("Retrieving Binder Object");
+    final response = await http.post(
+      Uri.parse('https://my-binder-api-staging.herokuapp.com/binder/retrieve'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'user': user,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      List<Binder> list = <Binder>[];
+      for (Object card in jsonDecode(response.body)['body']['cards']) {
+        list.add(Binder.fromJson(card));
+      }
+
+      return list;
+    } else {
+      throw Exception('Failed to create binder.');
+    }
+  }
+
+  Future<bool> insertRandomCard(String user) async {
+    final response = await http.post(
+      Uri.parse(
+          'https://my-binder-api-staging.herokuapp.com/card/insert-random'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'user': user,
+      }),
+    );
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw Exception('Failed to add new random card');
+    }
   }
 }
