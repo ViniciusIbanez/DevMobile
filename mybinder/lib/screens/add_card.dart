@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mybinder/api_handler.dart';
-import 'package:mybinder/screens/Home.dart';
+import 'package:mybinder/screens/home.dart';
 
 class AddCard extends StatefulWidget {
   String user;

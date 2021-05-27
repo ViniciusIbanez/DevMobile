@@ -66,7 +66,6 @@ class _MyBinderState extends State<MyBinder> {
               new Padding(padding: const EdgeInsets.only(top: 15.0)),
               Expanded(
                 child: SizedBox(
-                  height: 200.0,
                   child: new ListView.builder(
                     padding: const EdgeInsets.all(0.01),
                     itemCount: entries.length,
