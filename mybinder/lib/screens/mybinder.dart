@@ -5,7 +5,7 @@ import 'package:mybinder/binder.dart';
 
 class MyBinder extends StatefulWidget {
   List<Binder> binder;
-  MyBinder({Key key, this.binder}) : super(key: key);
+  MyBinder({Key? key, required this.binder}) : super(key: key);
 
   @override
   _MyBinderState createState() => _MyBinderState();
@@ -17,7 +17,7 @@ class _MyBinderState extends State<MyBinder> {
   List<Binder> entries = [];
 
   @override
-  Future<void> initState() {
+  initState() {
     super.initState();
   }
 
@@ -55,7 +55,8 @@ class _MyBinderState extends State<MyBinder> {
               body: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              new Padding(padding: const EdgeInsets.only(top: 15.0)),
+              if (widget.binder.length > 0)
+                new Padding(padding: const EdgeInsets.only(top: 15.0)),
               Expanded(
                 child: SizedBox(
                   child: new ListView.builder(
@@ -64,7 +65,16 @@ class _MyBinderState extends State<MyBinder> {
                     itemBuilder: _buildItemsForListView,
                   ),
                 ),
-              )
+              ),
+              if (widget.binder.length == 0)
+                new Column(
+                  children: [
+                    new Image(
+                      image: new AssetImage("assets/logo.png"),
+                    ),
+                    SizedBox(height: 20),
+                  ],
+                )
             ],
           ));
         });

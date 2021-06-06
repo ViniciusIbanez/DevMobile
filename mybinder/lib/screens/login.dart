@@ -14,15 +14,15 @@ class LoginPage extends StatefulWidget {
 
 class LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
-  Animation<double> _iconAnimation;
-  AnimationController _iconAnimationController;
-  String _email, _password;
+  late Animation<double> _iconAnimation;
+  late AnimationController _iconAnimationController;
+  late String _email, _password;
   bool signInEmail = false;
   String emailButtonText = "Entrar com email";
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
-  void initState() {
+  initState() {
     super.initState();
     _iconAnimationController = new AnimationController(
         vsync: this, duration: new Duration(milliseconds: 500));
@@ -57,7 +57,10 @@ class LoginPageState extends State<LoginPage>
       topic.init();
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => Home()),
+        MaterialPageRoute(
+            builder: (context) => Home(
+                  user: '',
+                )),
       );
     }
   }
@@ -80,7 +83,7 @@ class LoginPageState extends State<LoginPage>
     print(googleAuth.toString());
 
     // Create a new credential
-    final GoogleAuthCredential credential = GoogleAuthProvider.credential(
+    final OAuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
@@ -157,7 +160,7 @@ class LoginPageState extends State<LoginPage>
                               loginEmail();
                             }
                           },
-                          backgroundColor: Colors.blueGrey[700],
+                          backgroundColor: Colors.blue,
                         ),
                         SignInButton(
                           Buttons.GoogleDark,
