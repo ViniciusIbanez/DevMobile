@@ -75,11 +75,12 @@ class _HomeState extends State<Home> {
                     backgroundColor: Colors.blue,
                   ),
                   new Padding(padding: const EdgeInsets.only(top: 10.0)),
-                  Text("Loading",
+                  Text("Carregando",
                       style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12))
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontFamily: 'Agne',
+                      ))
                 ],
               ),
             );

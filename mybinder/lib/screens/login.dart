@@ -110,7 +110,7 @@ class LoginPageState extends State<LoginPage>
             child: new Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                SizedBox(height: 100),
+                SizedBox(height: 10),
                 Column(
                   children: [
                     Container(
@@ -161,15 +161,17 @@ class LoginPageState extends State<LoginPage>
                   //padding: const EdgeInsets.all(40.0),
                   child: new Form(
                     child: new Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
                         SizedBox(
-                            width: 300,
+                            width: 200,
                             child: Column(children: [
                               if (signInEmail)
                                 new TextFormField(
                                   decoration: new InputDecoration(
                                       labelText: "E-mail cadastrado",
+                                      labelStyle: new TextStyle(
+                                          fontSize: 15, color: Colors.blue),
                                       suffixIcon:
                                           Icon(Icons.email, color: Colors.blue),
                                       fillColor: Colors.blue),
@@ -179,11 +181,14 @@ class LoginPageState extends State<LoginPage>
                                       _email = value.trim();
                                     });
                                   },
+                                  style: new TextStyle(fontSize: 10),
                                 ),
                               SizedBox(height: 10),
                               if (signInEmail)
                                 new TextFormField(
                                   decoration: new InputDecoration(
+                                      labelStyle: new TextStyle(
+                                          fontSize: 15, color: Colors.blue),
                                       labelText: "Senha",
                                       suffixIcon:
                                           Icon(Icons.lock, color: Colors.blue)),
@@ -197,7 +202,7 @@ class LoginPageState extends State<LoginPage>
                                 ),
                             ])),
 
-                        SizedBox(height: 50),
+                        SizedBox(height: 30),
                         SignInButtonBuilder(
                           text: '$emailButtonText',
                           icon: Icons.email,

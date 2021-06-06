@@ -61,7 +61,7 @@ class _MyBinderState extends State<MyBinder> {
                   children: [
                     SizedBox(
                       width: 150,
-                      height: 300,
+                      height: 180,
                       child: Column(
                         children: [
                           SizedBox(
@@ -72,13 +72,13 @@ class _MyBinderState extends State<MyBinder> {
                               fit: BoxFit.fill,
                             ),
                           ),
-                          Padding(padding: const EdgeInsets.only(top: 50.0))
+                          //Padding(padding: const EdgeInsets.only(top: 50.0))
                         ],
                       ),
                     ),
                     SizedBox(
                       height: 300,
-                      width: 400,
+                      width: 200,
                       child: DefaultTextStyle(
                         style: const TextStyle(
                           fontSize: 30.0,
