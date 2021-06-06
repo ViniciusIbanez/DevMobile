@@ -4,9 +4,12 @@ import 'package:mybinder/api_handler.dart';
 import 'package:mybinder/screens/mybinder.dart';
 import 'package:mybinder/screens/add_card.dart';
 import 'package:mybinder/screens/settings.dart';
+import 'package:mybinder/binder.dart';
+import 'package:mybinder/cards.dart';
 
 class Home extends StatefulWidget {
   String user;
+  List<Binder> binder;
   Home({Key key, this.user}) : super(key: key);
 
   @override
@@ -15,10 +18,15 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int _currentIndex = 0;
-  final MyBinder binder = new MyBinder();
-  final List<Widget> _children = [MyBinder(), AddCard(), Settings()];
+  //final MyBinder binder = new MyBinder();
+
   final ApiHandler api = new ApiHandler();
   final FirebaseAuth auth = FirebaseAuth.instance;
+  final List<Binder> binder_list = [];
+  final List<Binder> cards_list = [];
+  final List<Widget> _children = [MyBinder(), AddCard(), Settings()];
+  bool isUserInit = false;
+  bool shouldRetrieveCards = true;
 
   @override
   void initState() {
@@ -32,8 +40,29 @@ class _HomeState extends State<Home> {
   }
 
   Future<bool> initUser() async {
-    bool response = await api.insertUser(auth.currentUser.uid);
-    return response;
+    if (!isUserInit || _currentIndex == 0) {
+      this.binder_list.clear();
+      bool response =
+          await api.initUser(auth.currentUser.uid, this.binder_list);
+      isUserInit = true;
+    }
+
+    return true;
+  }
+
+  Widget getScreen(_currentIndex) {
+    if (_currentIndex == 0) {
+      return MyBinder(binder: this.binder_list);
+    }
+    if (_currentIndex == 1) {
+      return AddCard();
+    }
+
+    if (_currentIndex == 2) {
+      return Settings();
+    }
+
+    return null;
   }
 
   @override
@@ -65,7 +94,7 @@ class _HomeState extends State<Home> {
             appBar: AppBar(
               title: Text('MyBinder'),
             ),
-            body: _children[_currentIndex],
+            body: getScreen(_currentIndex),
             bottomNavigationBar: BottomNavigationBar(
               onTap: onTabTapped,
               currentIndex: _currentIndex,

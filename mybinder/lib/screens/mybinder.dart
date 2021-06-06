@@ -4,8 +4,8 @@ import 'package:mybinder/api_handler.dart';
 import 'package:mybinder/binder.dart';
 
 class MyBinder extends StatefulWidget {
-  String user;
-  MyBinder({Key key, this.user}) : super(key: key);
+  List<Binder> binder;
+  MyBinder({Key key, this.binder}) : super(key: key);
 
   @override
   _MyBinderState createState() => _MyBinderState();
@@ -21,15 +21,16 @@ class _MyBinderState extends State<MyBinder> {
     super.initState();
   }
 
-  Future<bool> initList() async {
-    entries = await api.createBinder(auth.currentUser.uid);
+  Future<bool> initList(List<Binder> binder) async {
+    //entries = await api.createBinder(auth.currentUser.uid);
+    entries = binder;
     return true;
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: initList(),
+        future: initList(widget.binder),
         builder: (context, snapshot) {
           print(snapshot.hasData);
           if (!snapshot.hasData) {
@@ -54,15 +55,6 @@ class _MyBinderState extends State<MyBinder> {
               body: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              new Padding(padding: const EdgeInsets.only(top: 15.0)),
-              Text(
-                "*Durante a fase de desenvolvimento todo novo usuário terá algumas cartas na pasta por padrão",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red,
-                ),
-                textAlign: TextAlign.center,
-              ),
               new Padding(padding: const EdgeInsets.only(top: 15.0)),
               Expanded(
                 child: SizedBox(
