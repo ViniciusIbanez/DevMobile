@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mybinder/api_handler.dart';
 import 'package:mybinder/binder.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
 class MyBinder extends StatefulWidget {
-  String user;
-  MyBinder({Key key, this.user}) : super(key: key);
+  List<Binder> binder;
+  MyBinder({Key? key, required this.binder}) : super(key: key);
 
   @override
   _MyBinderState createState() => _MyBinderState();
@@ -17,19 +18,20 @@ class _MyBinderState extends State<MyBinder> {
   List<Binder> entries = [];
 
   @override
-  Future<void> initState() {
+  initState() {
     super.initState();
   }
 
-  Future<bool> initList() async {
-    entries = await api.createBinder(auth.currentUser.uid);
+  Future<bool> initList(List<Binder> binder) async {
+    //entries = await api.createBinder(auth.currentUser.uid);
+    entries = binder;
     return true;
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: initList(),
+        future: initList(widget.binder),
         builder: (context, snapshot) {
           print(snapshot.hasData);
           if (!snapshot.hasData) {
@@ -54,16 +56,51 @@ class _MyBinderState extends State<MyBinder> {
               body: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              new Padding(padding: const EdgeInsets.only(top: 15.0)),
-              Text(
-                "*Durante a fase de desenvolvimento todo novo usuário terá algumas cartas na pasta por padrão",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red,
+              if (widget.binder.length == 0)
+                Column(
+                  children: [
+                    SizedBox(
+                      width: 150,
+                      height: 180,
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            width: 150,
+                            height: 150,
+                            child: Image(
+                              image: new AssetImage("assets/logo.png"),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                          //Padding(padding: const EdgeInsets.only(top: 50.0))
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 300,
+                      width: 200,
+                      child: DefaultTextStyle(
+                        style: const TextStyle(
+                          fontSize: 30.0,
+                          fontFamily: 'Agne',
+                        ),
+                        textAlign: TextAlign.center,
+                        child: AnimatedTextKit(
+                          repeatForever: false,
+                          isRepeatingAnimation: false,
+                          animatedTexts: [
+                            TypewriterAnimatedText(
+                                'Nenhuma carta encontrada, comece a criar a sua pasta!!'),
+                          ],
+                          onTap: () {
+                            print("Tap Event");
+                          },
+                        ),
+                      ),
+                    ),
+                    new Padding(padding: const EdgeInsets.only(top: 15.0)),
+                  ],
                 ),
-                textAlign: TextAlign.center,
-              ),
-              new Padding(padding: const EdgeInsets.only(top: 15.0)),
               Expanded(
                 child: SizedBox(
                   child: new ListView.builder(
@@ -72,7 +109,7 @@ class _MyBinderState extends State<MyBinder> {
                     itemBuilder: _buildItemsForListView,
                   ),
                 ),
-              )
+              ),
             ],
           ));
         });
@@ -80,17 +117,23 @@ class _MyBinderState extends State<MyBinder> {
 
   ListTile _buildItemsForListView(BuildContext context, int index) {
     return ListTile(
-      minLeadingWidth: 1,
-      subtitle: Image.network(entries[index].imageUrl),
-      title: Text(
-        "Name: " +
-            entries[index].cardName +
-            "\nSet: " +
-            entries[index].setName +
-            "\n#" +
-            entries[index].multiverseId,
-        textAlign: TextAlign.center,
-      ),
-    );
+        minLeadingWidth: 1,
+        title: Container(
+          child: Column(
+            children: [
+              Text(
+                "Name: " +
+                    entries[index].cardName +
+                    "\nSet: " +
+                    entries[index].setName +
+                    "\n#" +
+                    entries[index].multiverseId,
+                textAlign: TextAlign.center,
+              ),
+              Image.network(entries[index].imageUrl),
+              new Padding(padding: const EdgeInsets.only(top: 50.0)),
+            ],
+          ),
+        ));
   }
 }

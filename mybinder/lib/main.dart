@@ -17,7 +17,9 @@ class MyApp extends StatelessWidget {
     if (isLoggedIn) {
       return new MaterialApp(
         theme: ThemeData.dark(),
-        home: new Home(),
+        home: new Home(
+          user: '',
+        ),
       );
     } else {
       return new MaterialApp(

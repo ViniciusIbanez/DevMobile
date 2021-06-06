@@ -2,10 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mybinder/api_handler.dart';
 import 'package:mybinder/screens/home.dart';
+import 'package:mybinder/binder.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
 class AddCard extends StatefulWidget {
-  String user;
-  AddCard({Key key, this.user}) : super(key: key);
+  List<Binder> cards;
+  List<Binder> binder;
+  AddCard({Key? key, required this.cards, required this.binder})
+      : super(key: key);
 
   @override
   _AddCardState createState() => _AddCardState();
@@ -14,43 +19,133 @@ class AddCard extends StatefulWidget {
 class _AddCardState extends State<AddCard> {
   final ApiHandler api = new ApiHandler();
   final FirebaseAuth auth = FirebaseAuth.instance;
+  String dropdownValue = '1';
+  bool shouldRetrieveCards = true;
+  final TextEditingController _typeAheadController = TextEditingController();
+  late Binder _cardToAdd;
 
   @override
-  Future<void> initState() {
+  initState() {
     super.initState();
   }
+
+  Future<bool> addCard(Binder card, List<Binder> binder) async {
+    binder.add(card);
+    api.insertCard(auth.currentUser!.uid, card.multiverseId);
+    return true;
+  }
+
+  // Future<bool> retrieveAllCards(List<Binder> cards) async {
+  //   bool response = true;
+  //   if (shouldRetrieveCards) {
+  //     shouldRetrieveCards = false;
+  //     response = await api.retrieveAllCards(cards);
+  //   }
+
+  //   return response;
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        new Padding(padding: const EdgeInsets.only(top: 15.0)),
-        Text(
-          "*Tela em desenvolvimento, o botão abaixo irá adicionar uma carta aleatória na pasta",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.red,
+        body: new Stack(fit: StackFit.expand, children: <Widget>[
+      new Theme(
+        data: new ThemeData(
+            brightness: Brightness.dark,
+            inputDecorationTheme: new InputDecorationTheme(
+              hintStyle: new TextStyle(color: Colors.blue, fontSize: 20.0),
+              labelStyle: new TextStyle(color: Colors.blue, fontSize: 25.0),
+            )),
+        child: SingleChildScrollView(
+          child: new Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                  height: 150,
+                  width: 150,
+                  child: FittedBox(
+                    child: new Image(
+                      image: new AssetImage("assets/logo.png"),
+                      fit: BoxFit.fill,
+                    ),
+                  )),
+              Padding(padding: const EdgeInsets.only(top: 30.0)),
+              new Container(
+                padding: const EdgeInsets.all(40.0),
+                child: new Form(
+                  child: new Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                          child: TypeAheadField<Binder?>(
+                        debounceDuration: Duration(microseconds: 500),
+                        textFieldConfiguration: TextFieldConfiguration(
+                          controller: this._typeAheadController,
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.search),
+                            border: OutlineInputBorder(),
+                            hintText: 'Pesquisar carta',
+                          ),
+                        ),
+                        suggestionsCallback: (pattern) async {
+                          return await api.retrieveAllCards(
+                              widget.cards, pattern);
+                        },
+                        itemBuilder: (context, suggestion) {
+                          final card = suggestion!;
+
+                          return ListTile(
+                            title: Text(card.cardName),
+                          );
+                        },
+                        onSuggestionSelected: (Binder? suggestion) {
+                          final card = suggestion!;
+                          this._typeAheadController.text = card.cardName;
+                          _cardToAdd = card;
+                        },
+                      )),
+                      SizedBox(height: 30),
+                      SizedBox(height: 100),
+                      SizedBox(
+                          width: 200.0,
+                          height: 60.0,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.blue,
+                              onPrimary: Colors.white,
+                            ),
+                            onPressed: () async {
+                              var snackBar;
+                              if (!widget.binder.contains(_cardToAdd)) {
+                                print(_cardToAdd);
+                                bool response =
+                                    await addCard(_cardToAdd, widget.binder);
+                                snackBar = SnackBar(
+                                  content: Text(_cardToAdd.cardName +
+                                      " Adicionado com sucesso"),
+                                  backgroundColor: Colors.green,
+                                );
+                              } else {
+                                snackBar = SnackBar(
+                                  content: Text(_cardToAdd.cardName +
+                                      "Carta já cadastrada em sua parta"),
+                                  backgroundColor: Colors.red,
+                                );
+                              }
+
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                            },
+                            child: Text('Adicionar Carta'),
+                          ))
+                    ],
+                  ),
+                ),
+              )
+            ],
           ),
-          textAlign: TextAlign.center,
         ),
-        new Padding(padding: const EdgeInsets.only(top: 100.0)),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            primary: Colors.blue,
-            onPrimary: Colors.white,
-          ),
-          onPressed: () {
-            api.insertRandomCard(auth.currentUser.uid);
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Home()),
-            );
-          },
-          child: Text('Adicionar Carta'),
-        )
-      ],
-    ));
+      ),
+    ]));
   }
 }
