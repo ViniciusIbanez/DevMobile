@@ -6,6 +6,7 @@ import 'dart:developer';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mybinder/notification_handler.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -110,45 +111,92 @@ class LoginPageState extends State<LoginPage>
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 SizedBox(height: 100),
-                new Image(
-                  image: new AssetImage("assets/logo.png"),
+                Column(
+                  children: [
+                    Container(
+                        height: 150,
+                        width: 150,
+                        child: FittedBox(
+                          child: new Image(
+                            image: new AssetImage("assets/logo.png"),
+                            fit: BoxFit.fill,
+                          ),
+                        )),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 30.0),
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 130.0,
+                          height: 150,
+                          child: DefaultTextStyle(
+                            style: const TextStyle(
+                              fontSize: 30.0,
+                              fontFamily: 'Agne',
+                            ),
+                            textAlign: TextAlign.center,
+                            child: AnimatedTextKit(
+                              repeatForever: false,
+                              isRepeatingAnimation: false,
+                              animatedTexts: [
+                                TypewriterAnimatedText('A sua pasta de Magic'),
+                                TypewriterAnimatedText('Onde estiver'),
+                                TypewriterAnimatedText('MyBinder'),
+                              ],
+                              onTap: () {
+                                print("Tap Event");
+                              },
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
                 ),
-                SizedBox(height: 20),
+                //SizedBox(height: 10),
                 new Container(
-                  padding: const EdgeInsets.all(40.0),
+                  //padding: const EdgeInsets.all(40.0),
                   child: new Form(
                     child: new Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        if (signInEmail)
-                          new TextFormField(
-                            decoration: new InputDecoration(
-                                labelText: "E-mail cadastrado",
-                                suffixIcon:
-                                    Icon(Icons.email, color: Colors.blue),
-                                fillColor: Colors.blue),
-                            keyboardType: TextInputType.emailAddress,
-                            onChanged: (value) {
-                              setState(() {
-                                _email = value.trim();
-                              });
-                            },
-                          ),
-                        SizedBox(height: 10),
-                        if (signInEmail)
-                          new TextFormField(
-                            decoration: new InputDecoration(
-                                labelText: "Senha",
-                                suffixIcon:
-                                    Icon(Icons.lock, color: Colors.blue)),
-                            obscureText: true,
-                            keyboardType: TextInputType.text,
-                            onChanged: (value) {
-                              setState(() {
-                                _password = value.trim();
-                              });
-                            },
-                          ),
+                        SizedBox(
+                            width: 300,
+                            child: Column(children: [
+                              if (signInEmail)
+                                new TextFormField(
+                                  decoration: new InputDecoration(
+                                      labelText: "E-mail cadastrado",
+                                      suffixIcon:
+                                          Icon(Icons.email, color: Colors.blue),
+                                      fillColor: Colors.blue),
+                                  keyboardType: TextInputType.emailAddress,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _email = value.trim();
+                                    });
+                                  },
+                                ),
+                              SizedBox(height: 10),
+                              if (signInEmail)
+                                new TextFormField(
+                                  decoration: new InputDecoration(
+                                      labelText: "Senha",
+                                      suffixIcon:
+                                          Icon(Icons.lock, color: Colors.blue)),
+                                  obscureText: true,
+                                  keyboardType: TextInputType.text,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _password = value.trim();
+                                    });
+                                  },
+                                ),
+                            ])),
+
                         SizedBox(height: 50),
                         SignInButtonBuilder(
                           text: '$emailButtonText',

@@ -4,7 +4,7 @@ import 'package:mybinder/api_handler.dart';
 import 'package:mybinder/screens/home.dart';
 import 'package:mybinder/binder.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
 class AddCard extends StatefulWidget {
   List<Binder> cards;
@@ -60,11 +60,16 @@ class _AddCardState extends State<AddCard> {
           child: new Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              SizedBox(height: 20),
-              new Image(
-                image: new AssetImage("assets/logo.png"),
-              ),
-              SizedBox(height: 20),
+              Container(
+                  height: 150,
+                  width: 150,
+                  child: FittedBox(
+                    child: new Image(
+                      image: new AssetImage("assets/logo.png"),
+                      fit: BoxFit.fill,
+                    ),
+                  )),
+              Padding(padding: const EdgeInsets.only(top: 30.0)),
               new Container(
                 padding: const EdgeInsets.all(40.0),
                 child: new Form(
@@ -79,7 +84,7 @@ class _AddCardState extends State<AddCard> {
                           decoration: InputDecoration(
                             prefixIcon: Icon(Icons.search),
                             border: OutlineInputBorder(),
-                            hintText: 'Search Username',
+                            hintText: 'Pesquisar carta',
                           ),
                         ),
                         suggestionsCallback: (pattern) async {
@@ -110,14 +115,24 @@ class _AddCardState extends State<AddCard> {
                               onPrimary: Colors.white,
                             ),
                             onPressed: () async {
-                              print(_cardToAdd);
-                              bool response =
-                                  await addCard(_cardToAdd, widget.binder);
-                              final snackBar = SnackBar(
-                                content: Text(_cardToAdd.cardName +
-                                    " Adicionado com sucesso"),
-                                backgroundColor: Colors.green,
-                              );
+                              var snackBar;
+                              if (!widget.binder.contains(_cardToAdd)) {
+                                print(_cardToAdd);
+                                bool response =
+                                    await addCard(_cardToAdd, widget.binder);
+                                snackBar = SnackBar(
+                                  content: Text(_cardToAdd.cardName +
+                                      " Adicionado com sucesso"),
+                                  backgroundColor: Colors.green,
+                                );
+                              } else {
+                                snackBar = SnackBar(
+                                  content: Text(_cardToAdd.cardName +
+                                      "Carta já cadastrada em sua parta"),
+                                  backgroundColor: Colors.red,
+                                );
+                              }
+
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(snackBar);
                             },
