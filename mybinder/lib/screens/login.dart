@@ -76,7 +76,7 @@ class LoginPageState extends State<LoginPage>
 
   Future<UserCredential> signInWithGoogle() async {
     // Trigger the authentication flow
-    final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+    final GoogleSignInAccount googleUser = (await GoogleSignIn().signIn())!;
 
     // Obtain the auth details from the request
     final GoogleSignInAuthentication googleAuth =
@@ -212,7 +212,7 @@ class LoginPageState extends State<LoginPage>
                         ),
                         SignInButton(
                           Buttons.GoogleDark,
-                          text: "Entrar com conta Google",
+                          text: "Entrar com Google",
                           onPressed: () {
                             Future<UserCredential> auth = signInWithGoogle();
                             goToHome(auth);
