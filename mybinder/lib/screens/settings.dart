@@ -4,7 +4,7 @@ import 'package:mybinder/api_handler.dart';
 
 class Settings extends StatefulWidget {
   String user;
-  Settings({Key key, this.user}) : super(key: key);
+  Settings({Key? key, required this.user}) : super(key: key);
 
   @override
   _SettingsState createState() => _SettingsState();
@@ -15,7 +15,7 @@ class _SettingsState extends State<Settings> {
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
-  Future<void> initState() {
+  initState() {
     super.initState();
   }
 

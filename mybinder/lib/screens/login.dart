@@ -6,6 +6,7 @@ import 'dart:developer';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mybinder/notification_handler.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -14,15 +15,15 @@ class LoginPage extends StatefulWidget {
 
 class LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
-  Animation<double> _iconAnimation;
-  AnimationController _iconAnimationController;
-  String _email, _password;
+  late Animation<double> _iconAnimation;
+  late AnimationController _iconAnimationController;
+  late String _email, _password;
   bool signInEmail = false;
   String emailButtonText = "Entrar com email";
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
-  void initState() {
+  initState() {
     super.initState();
     _iconAnimationController = new AnimationController(
         vsync: this, duration: new Duration(milliseconds: 500));
@@ -57,7 +58,10 @@ class LoginPageState extends State<LoginPage>
       topic.init();
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => Home()),
+        MaterialPageRoute(
+            builder: (context) => Home(
+                  user: '',
+                )),
       );
     }
   }
@@ -72,7 +76,7 @@ class LoginPageState extends State<LoginPage>
 
   Future<UserCredential> signInWithGoogle() async {
     // Trigger the authentication flow
-    final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+    final GoogleSignInAccount googleUser = (await GoogleSignIn().signIn())!;
 
     // Obtain the auth details from the request
     final GoogleSignInAuthentication googleAuth =
@@ -80,7 +84,7 @@ class LoginPageState extends State<LoginPage>
     print(googleAuth.toString());
 
     // Create a new credential
-    final GoogleAuthCredential credential = GoogleAuthProvider.credential(
+    final OAuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
@@ -106,47 +110,99 @@ class LoginPageState extends State<LoginPage>
             child: new Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                SizedBox(height: 100),
-                new Image(
-                  image: new AssetImage("assets/logo.png"),
+                SizedBox(height: 10),
+                Column(
+                  children: [
+                    Container(
+                        height: 150,
+                        width: 150,
+                        child: FittedBox(
+                          child: new Image(
+                            image: new AssetImage("assets/logo.png"),
+                            fit: BoxFit.fill,
+                          ),
+                        )),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 30.0),
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 130.0,
+                          height: 150,
+                          child: DefaultTextStyle(
+                            style: const TextStyle(
+                              fontSize: 30.0,
+                              fontFamily: 'Agne',
+                            ),
+                            textAlign: TextAlign.center,
+                            child: AnimatedTextKit(
+                              repeatForever: false,
+                              isRepeatingAnimation: false,
+                              animatedTexts: [
+                                TypewriterAnimatedText('A sua pasta de Magic'),
+                                TypewriterAnimatedText('Onde estiver'),
+                                TypewriterAnimatedText('MyBinder'),
+                              ],
+                              onTap: () {
+                                print("Tap Event");
+                              },
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
                 ),
-                SizedBox(height: 20),
+                //SizedBox(height: 10),
                 new Container(
-                  padding: const EdgeInsets.all(40.0),
+                  //padding: const EdgeInsets.all(40.0),
                   child: new Form(
                     child: new Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        if (signInEmail)
-                          new TextFormField(
-                            decoration: new InputDecoration(
-                                labelText: "E-mail cadastrado",
-                                suffixIcon:
-                                    Icon(Icons.email, color: Colors.blue),
-                                fillColor: Colors.blue),
-                            keyboardType: TextInputType.emailAddress,
-                            onChanged: (value) {
-                              setState(() {
-                                _email = value.trim();
-                              });
-                            },
-                          ),
-                        SizedBox(height: 10),
-                        if (signInEmail)
-                          new TextFormField(
-                            decoration: new InputDecoration(
-                                labelText: "Senha",
-                                suffixIcon:
-                                    Icon(Icons.lock, color: Colors.blue)),
-                            obscureText: true,
-                            keyboardType: TextInputType.text,
-                            onChanged: (value) {
-                              setState(() {
-                                _password = value.trim();
-                              });
-                            },
-                          ),
-                        SizedBox(height: 50),
+                        SizedBox(
+                            width: 200,
+                            child: Column(children: [
+                              if (signInEmail)
+                                new TextFormField(
+                                  decoration: new InputDecoration(
+                                      labelText: "E-mail cadastrado",
+                                      labelStyle: new TextStyle(
+                                          fontSize: 15, color: Colors.blue),
+                                      suffixIcon:
+                                          Icon(Icons.email, color: Colors.blue),
+                                      fillColor: Colors.blue),
+                                  keyboardType: TextInputType.emailAddress,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _email = value.trim();
+                                    });
+                                  },
+                                  style: new TextStyle(fontSize: 10),
+                                ),
+                              SizedBox(height: 10),
+                              if (signInEmail)
+                                new TextFormField(
+                                  decoration: new InputDecoration(
+                                      labelStyle: new TextStyle(
+                                          fontSize: 15, color: Colors.blue),
+                                      labelText: "Senha",
+                                      suffixIcon:
+                                          Icon(Icons.lock, color: Colors.blue)),
+                                  obscureText: true,
+                                  keyboardType: TextInputType.text,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _password = value.trim();
+                                    });
+                                  },
+                                ),
+                            ])),
+
+                        SizedBox(height: 30),
                         SignInButtonBuilder(
                           text: '$emailButtonText',
                           icon: Icons.email,
@@ -157,11 +213,11 @@ class LoginPageState extends State<LoginPage>
                               loginEmail();
                             }
                           },
-                          backgroundColor: Colors.blueGrey[700],
+                          backgroundColor: Colors.blue,
                         ),
                         SignInButton(
                           Buttons.GoogleDark,
-                          text: "Entrar com conta Google",
+                          text: "Entrar com Google",
                           onPressed: () {
                             Future<UserCredential> auth = signInWithGoogle();
                             goToHome(auth);
